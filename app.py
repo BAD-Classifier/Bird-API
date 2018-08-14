@@ -1,10 +1,10 @@
-from flask import Flask, request
+from flask import Flask, request, json
 import librosa 
 import librosa.display
 import matplotlib
 matplotlib.use('PS')
 import numpy, scipy, matplotlib.pyplot as plt, librosa, sklearn
-import urllib.request
+# import urllib.request
 
 from keras.preprocessing.image import img_to_array
 from keras.models import load_model
@@ -16,6 +16,8 @@ import cv2
 import os
 import boto3
 import botocore
+from keras import backend as K
+
 
 BUCKET_NAME = 'testingsoundsbirds'
 KEY = 'andropadusAWS.mp3'
@@ -31,6 +33,10 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    return 'Mo Salah'
+
+@app.route('/classify/<sound_url>', methods=['GET'])
+def classify(sound_url):
     s3 = boto3.resource('s3')
     try:
         s3.Bucket(BUCKET_NAME).download_file(KEY, 'local_sound.mp3')
@@ -67,9 +73,9 @@ def index():
     filename = imageName[imageName.rfind(os.path.sep) + 1:]
     label = "{}: {:.2f}%".format(label, proba[idx] * 100)
     print("[INFO] {}".format(label))
+    K.clear_session()
 
-
-    return label
+    return sound_url
 
 @app.route('/todo/api/v1.0/tasks', methods=['POST'])
 def create_task():
@@ -84,5 +90,12 @@ def create_task():
     tasks.append(task)
     return jsonify({'task': task}), 201
 
+@app.route('/keita', methods = ['POST'])
+def api_message():
+
+    if request.headers['Content-Type'] == 'application/json':
+        return "JSON Message: " + json.dumps(request.json)
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True, host='0.0.0.0')
