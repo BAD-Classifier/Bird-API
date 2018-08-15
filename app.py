@@ -4,7 +4,6 @@ import librosa.display
 import matplotlib
 matplotlib.use('PS')
 import numpy, scipy, matplotlib.pyplot as plt, librosa, sklearn
-# import urllib.request
 
 from keras.preprocessing.image import img_to_array
 from keras.models import load_model
@@ -17,6 +16,7 @@ import os
 import boto3
 import botocore
 from keras import backend as K
+import urllib.request
 
 
 BUCKET_NAME = 'testingsoundsbirds'
@@ -92,10 +92,19 @@ def create_task():
 
 @app.route('/keita', methods = ['POST'])
 def api_message():
-
     if request.headers['Content-Type'] == 'application/json':
         return "JSON Message: " + json.dumps(request.json)
 
-
+@app.route('/download/<path:some_url>', methods = ['GET'])
+def download(some_url):
+    print(some_url)
+    file_name = some_url.split('/')[-1]
+    file_name = 'Download/' + file_name
+    with urllib.request.urlopen(some_url) as response:
+        with open(file_name, 'wb') as out_file:
+           data = response.read() 
+           out_file.write(data)
+    return file_name
+    
 if __name__ == '__main__':
     app.run(debug=True, threaded=True, host='0.0.0.0')
