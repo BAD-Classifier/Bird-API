@@ -35,18 +35,18 @@ app = Flask(__name__)
 def index():
     return 'Mo Salah'
 
-@app.route('/classify/<sound_url>', methods=['GET'])
+@app.route('/classify/<path:sound_url>', methods=['GET'])
 def classify(sound_url):
-    s3 = boto3.resource('s3')
-    try:
-        s3.Bucket(BUCKET_NAME).download_file(KEY, 'local_sound.mp3')
-    except botocore.exceptions.ClientError as e:
-        if e.response['Error']['Code'] == "404":
-            print("The object does not exist.")
-        else:
-            raise
 
-    y, fs = librosa.load('local_sound.mp3',sr=None,mono=True)
+    sound_name = sound_url.split('/')[-1]
+    file_name = 'Download/' + sound_name
+    with urllib.request.urlopen(sound_url) as response:
+        with open(file_name, 'wb') as out_file:
+           data = response.read() 
+           out_file.write(data)
+    print(file_name)
+
+    y, fs = librosa.load(file_name,sr=None,mono=True)
     message = "MFCC was generated!"
     mfccs = librosa.feature.mfcc(y, sr=fs, n_fft=1024, hop_length=512, n_mfcc=13, fmin=0,fmax=8000)
     mfccs = sklearn.preprocessing.scale(mfccs, axis=1)  
@@ -71,11 +71,14 @@ def classify(sound_url):
     idx = np.argmax(proba)
     label = lb.classes_[idx]
     filename = imageName[imageName.rfind(os.path.sep) + 1:]
+    print(label)
     label = "{}: {:.2f}%".format(label, proba[idx] * 100)
-    print("[INFO] {}".format(label))
+    identification = "[INFO] {}".format(label)
+    #print("[INFO] {}".format(label))
+    print(identification)
     K.clear_session()
 
-    return sound_url
+    return identification
 
 @app.route('/todo/api/v1.0/tasks', methods=['POST'])
 def create_task():
@@ -105,6 +108,7 @@ def download(some_url):
            data = response.read() 
            out_file.write(data)
     return file_name
+
     
 if __name__ == '__main__':
     app.run(debug=True, threaded=True, host='0.0.0.0')
