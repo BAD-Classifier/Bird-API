@@ -35,15 +35,27 @@ app = Flask(__name__)
 def index():
     return 'Mo Salah'
 
+@app.route('/exists/<path:sound_url>', methods=['GET'])
+def exists(sound_url):
+    sound_name = sound_url.split('/')[-1]
+    file_name = 'Download/' + sound_name
+
+    if not os.path.exists(file_name):
+        return "false"
+    else:
+        return "true"
+
 @app.route('/classify/<path:sound_url>', methods=['GET'])
 def classify(sound_url):
 
     sound_name = sound_url.split('/')[-1]
     file_name = 'Download/' + sound_name
-    with urllib.request.urlopen(sound_url) as response:
-        with open(file_name, 'wb') as out_file:
-           data = response.read() 
-           out_file.write(data)
+    if not os.path.exists(file_name):
+        with urllib.request.urlopen(sound_url) as response:
+            with open(file_name, 'wb') as out_file:
+                data = response.read() 
+                out_file.write(data)
+  
 
     y, fs = librosa.load(file_name,sr=None,mono=True)
     message = "MFCC was generated!"

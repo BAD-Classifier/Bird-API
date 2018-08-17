@@ -7,6 +7,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.model
+Download/
+*.png
 
 # C extensions
 *.so
