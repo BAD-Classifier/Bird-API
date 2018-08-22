@@ -94,10 +94,6 @@ def classifyPost():
 
 
 
-    return "FUCK YOU"
-
-
-
 @app.route('/classify/<path:sound_url>', methods=['GET'])
 def classify(sound_url):
 
@@ -141,4 +137,4 @@ def classify(sound_url):
     return label
     
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True, host='0.0.0.0')
+    app.run(debug=True, threaded=True, host='0.0.0.0', port=6000)
