@@ -19,7 +19,7 @@ from keras import backend as K
 import urllib.request
 
 modelName = 'it_5.model'
-labelName = 'lb.pickle'
+labelName = 'label.pickle'
 
 
 def save_image(picName):
