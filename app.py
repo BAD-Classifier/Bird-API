@@ -18,10 +18,6 @@ import botocore
 from keras import backend as K
 import urllib.request
 
-
-BUCKET_NAME = 'testingsoundsbirds'
-KEY = 'andropadusAWS.mp3'
-
 modelName = 'it_5.model'
 labelName = 'lb.pickle'
 
@@ -33,7 +29,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return 'Mo Salah'
+    return 'Server Operational'
 
 @app.route('/exists/<path:sound_url>', methods=['GET'])
 def exists(sound_url):
@@ -54,8 +50,6 @@ def classifyPost():
     sound_url = req_data['url']
     sound_name = sound_url.split('%')[-1]
     sound_name = sound_name.split('?')[0]
-    print(sound_url)
-    print(sound_name)
     file_name = sound_name
     if not os.path.exists(file_name):
         with urllib.request.urlopen(sound_url) as response:
@@ -78,12 +72,8 @@ def classifyPost():
     image = image.astype("float") / 255.0
     image = img_to_array(image)
     image = np.expand_dims(image, axis=0)
-    
-    print("[INFO] loading network...")
     model = load_model(modelName)
     lb = pickle.loads(open(labelName, "rb").read())
-
-    print("[INFO] classifying image...")
     proba = model.predict(image)[0]
     idx = np.argmax(proba)
     label = lb.classes_[idx].decode('ASCII')
@@ -117,17 +107,12 @@ def classify(sound_url):
     save_image(imageName)
     image = cv2.imread(imageName)
     output = image.copy()
-
     image = cv2.resize(image, (200, 100))
     image = image.astype("float") / 255.0
     image = img_to_array(image)
     image = np.expand_dims(image, axis=0)
-    
-    print("[INFO] loading network...")
     model = load_model(modelName)
     lb = pickle.loads(open(labelName, "rb").read())
-
-    print("[INFO] classifying image...")
     proba = model.predict(image)[0]
     idx = np.argmax(proba)
     label = lb.classes_[idx].decode('ASCII')
@@ -137,4 +122,4 @@ def classify(sound_url):
     return label
     
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True, host='0.0.0.0', port=6000)
+    app.run(debug=True, threaded=True, host='0.0.0.0', port=5000)
