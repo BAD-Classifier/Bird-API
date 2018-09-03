@@ -60,7 +60,7 @@ def classifyPost():
 
     y, fs = librosa.load(file_name,sr=None,mono=True)
     message = "MFCC was generated!"
-    mfccs = librosa.feature.mfcc(y, sr=fs, n_fft=1024, hop_length=512, n_mfcc=13, fmin=0,fmax=8000)
+    mfccs = librosa.feature.mfcc(y, sr=fs, n_fft=1024, hop_length=512, n_mfcc=13, fmin=20,fmax=12000)
     mfccs = sklearn.preprocessing.scale(mfccs, axis=1)  
     librosa.display.specshow(mfccs, sr=fs*2, cmap='coolwarm')
     imageName = sound_name[:-3] + 'png'
@@ -100,7 +100,7 @@ def classify(sound_url):
 
     y, fs = librosa.load(file_name,sr=None,mono=True)
     message = "MFCC was generated!"
-    mfccs = librosa.feature.mfcc(y, sr=fs, n_fft=1024, hop_length=512, n_mfcc=13, fmin=0,fmax=8000)
+    mfccs = librosa.feature.mfcc(y, sr=fs, n_fft=1024, hop_length=512, n_mfcc=13, fmin=20,fmax=12000)
     mfccs = sklearn.preprocessing.scale(mfccs, axis=1)  
     librosa.display.specshow(mfccs, sr=fs*2, cmap='coolwarm')
     imageName = sound_name[:-3] + 'png'
